@@ -1,5 +1,5 @@
-const commands = [];
-
+const undoArray = [];
+const redoArray = [];
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
   putDataStrings();
@@ -8,21 +8,30 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (evt) => {
     switch (evt.key) {
       case "t":
+        saveCommand(addTab, deleteTab);
         addTab();
+        updateDataInfo();
         break;
       case "q":
-        console.log("Undo");
+        undo();
         break;
       case "e":
-        console.log("Redo");
+        redo();
         break;
     }
   });
 });
 
+function updateDataInfo() {
+  putDataTabs();
+  putDataColumns();
+  putDataStrings();
+}
+
 function putDataTabs() {
   const tabs = document.querySelectorAll(".tabs");
   let cont = 1;
+
   tabs.forEach((tab) => {
     tab.setAttribute("data-tab", cont);
     cont++;
@@ -32,6 +41,7 @@ function putDataTabs() {
 function putDataColumns() {
   const tabs = document.querySelectorAll(".tabs__column");
   let cont = 1;
+
   tabs.forEach((tab) => {
     tab.setAttribute("data-col", cont);
     cont++;
@@ -41,9 +51,11 @@ function putDataColumns() {
 function putDataStrings() {
   const tabs = document.querySelectorAll(".tabs__column .tabs__cell");
   let cont = 1;
+
   tabs.forEach((tab) => {
     tab.setAttribute("data-string", cont);
     cont++;
+
     if (cont == 7) {
       cont = 1;
     }
@@ -53,7 +65,9 @@ function putDataStrings() {
 function addTab() {
   const section = document.querySelector(".content__tabs");
   const newTab = document.createElement("div");
+
   newTab.classList.add("tabs");
+
   newTab.innerHTML = `
   <div class="tabs__column">
     <span class="tabs__cell">E</span>
@@ -80,11 +94,58 @@ function addTab() {
     <span class="tabs__cell">-</span>
   </div>
   `;
+
   section.appendChild(newTab);
 }
 
-function saveCommand(evt) {
-  commands.push({
+function deleteTab() {
+  const section = document.querySelector(".content__tabs");
+  const lastChild = section.lastChild;
+  lastChild.remove();
+}
 
-  })
+function saveCommand(fn, revFn, keep = true) {
+  undoArray.push({
+    action: {
+      fn,
+    },
+    inverse: {
+      revFn,
+    },
+  });
+
+  //When something it's added the the redo array is restarted. This because we only need the redo after a undo, not after adding something.
+  if (keep) {
+    redoArray.length = 0;
+  }
+}
+
+function undo() {
+  const lastCommand = undoArray.pop();
+
+  if (lastCommand) {
+    const fn = lastCommand.inverse.revFn;
+    fn();
+
+    //We add the undo function to the redo array
+    redoArray.push({
+      action: {
+        fn,
+      },
+      inverse: {
+        revFn: lastCommand.action.fn,
+      },
+    });
+  }
+}
+
+function redo() {
+  const lastCommand = redoArray.pop();
+
+  if (lastCommand) {
+    const fn = lastCommand.inverse.revFn;
+    fn();
+    saveCommand(fn, lastCommand.action.fn, false); //False to avoid reset the redo
+    updateDataInfo();
+  }
 }
