@@ -1,0 +1,19 @@
+@use "base/variables" as v;
+@use "base/mixins" as m;
+
+.tabs{
+  display: flex;
+  padding-bottom: 3rem;
+  &__column{
+    display: flex;
+    flex-direction: column;
+  }
+  &__cell{
+    text-align: center;
+    width: 2rem;
+    font-weight: 700;
+    &-active{
+      background-color: rgba(196, 196, 51, 0.651);
+    }
+  }
+}

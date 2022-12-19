@@ -1,0 +1,17 @@
+@use "base/variables" as v;
+@use "base/mixins" as m;
+
+.shortcuts{
+  &__grid{
+    display: flex;
+    flex-direction: column;
+  }
+}
+.shortcut{
+  display: flex;
+  column-gap: 1.5rem;
+  &__key{
+    text-align: center;
+    font-weight: 700;
+  }
+}
