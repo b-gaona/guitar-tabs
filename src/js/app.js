@@ -1,5 +1,7 @@
 const undoArray = [];
 const redoArray = [];
+let flag = true;
+
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
   putDataStrings();
@@ -18,7 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
       case "e":
         redo();
         break;
+      case "Enter":
+        saveCommand(addLine, deleteLine);
+        addLine();
+        updateDataInfo();
+        break;
+      case "l":
+        saveCommand(addBlankCol, deleteBlankCol);
+        addBlankCol();
+        updateDataInfo();
+        break;
     }
+    const id = document.querySelector("#helper");
+    id.textContent = JSON.stringify(undoArray);
+    const id2 = document.querySelector("#helper2");
+    id2.textContent = JSON.stringify(redoArray);
   });
 });
 
@@ -63,6 +79,8 @@ function putDataStrings() {
 }
 
 function addTab() {
+  deleteActiveCell();
+
   const section = document.querySelector(".content__tabs");
   const newTab = document.createElement("div");
 
@@ -127,6 +145,8 @@ function undo() {
     const fn = lastCommand.inverse.revFn;
     fn();
 
+    addActiveCell(lastCommand.action.index);
+
     //We add the undo function to the redo array
     redoArray.push({
       action: {
@@ -141,11 +161,122 @@ function undo() {
 
 function redo() {
   const lastCommand = redoArray.pop();
+  const currCell = document.querySelector(".tabs__cell-active");
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
 
   if (lastCommand) {
     const fn = lastCommand.inverse.revFn;
-    fn();
     saveCommand(fn, lastCommand.action.fn, false); //False to avoid reset the redo
+
+    if (undoArray.length > 0) {
+      undoArray[undoArray.length - 1].action.index = {
+        string: currCell.dataset.string,
+        col: col.dataset.col,
+        tab: tab.dataset.tab,
+      };
+    }
+
+    fn();
     updateDataInfo();
   }
+}
+
+function addLine() {
+  const currCell = document.querySelector(".tabs__cell-active");
+
+  deleteActiveCell();
+
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
+  const newCol = document.createElement("div");
+  newCol.classList.add("tabs__column");
+  newCol.innerHTML = `
+    <span class="tabs__cell tabs__cell-active">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+  `;
+  tab.appendChild(newCol);
+}
+
+function deleteLine() {
+  const currCell = document.querySelector(".tabs__cell-active");
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
+
+  tab.lastChild.remove();
+}
+
+function addBlankCol() {
+  const currCell = document.querySelector(".tabs__cell-active");
+
+  deleteActiveCell();
+
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
+
+  const blankCol = document.createElement("div");
+  const newCol = document.createElement("div");
+
+  blankCol.classList.add("tabs__column");
+  newCol.classList.add("tabs__column");
+
+  blankCol.innerHTML = `
+    <span class="tabs__cell">|</span>
+    <span class="tabs__cell">|</span>
+    <span class="tabs__cell">|</span>
+    <span class="tabs__cell">|</span>
+    <span class="tabs__cell">|</span>
+    <span class="tabs__cell">|</span>
+  `;
+
+  newCol.innerHTML = `
+    <span class="tabs__cell tabs__cell-active">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+    <span class="tabs__cell">-</span>
+  `;
+
+  tab.appendChild(blankCol);
+  tab.appendChild(newCol);
+}
+
+function deleteBlankCol() {
+  const currCell = document.querySelector(".tabs__cell-active");
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
+
+  tab.lastChild.remove();
+  tab.lastChild.remove();
+}
+
+function deleteActiveCell() {
+  const currCell = document.querySelector(".tabs__cell-active");
+  const col = currCell.parentElement;
+  const tab = col.parentElement;
+
+  console.log(undoArray[0]);
+
+  if (undoArray.length > 0) {
+    undoArray[undoArray.length - 1].action.index = {
+      string: currCell.dataset.string,
+      col: col.dataset.col,
+      tab: tab.dataset.tab,
+      //activated: "del",
+    };
+  }
+  currCell.classList.remove("tabs__cell-active");
+}
+
+function addActiveCell({ string, col, tab }) {
+  const currTab = document.querySelector(`div[data-tab='${tab}']`);
+  const currCol = currTab.querySelector(`div[data-col='${col}']`);
+  const currString = currCol.querySelector(`span[data-string='${string}']`);
+
+  currString.classList.add("tabs__cell-active");
 }
