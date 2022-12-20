@@ -1,5 +1,6 @@
 const undoArray = [];
 const redoArray = [];
+const MAX_COLUMNS = "35";
 
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
@@ -22,9 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
         redo();
         break;
       case "Enter":
-        saveCommand(addLine, deleteLine);
-        addLine();
-        updateDataInfo();
+        if (col !== MAX_COLUMNS) {
+          saveCommand(addLine, deleteLine);
+          addLine();
+          updateDataInfo();
+        }
         break;
       case "l":
         saveCommand(addBlankCol, deleteBlankCol);
@@ -50,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         break;
       case "d":
-        if (col !== "35") {
+        if (col !== MAX_COLUMNS) {
           saveCommand(moveRight, moveLeft);
           moveRight();
         }
@@ -208,11 +211,11 @@ function redo() {
 function addLine() {
   const { tabElement } = getActiveCell();
 
-  deleteActiveCell();
-
-  const newCol = document.createElement("div");
-  newCol.classList.add("tabs__column");
-  newCol.innerHTML = `
+  if (!verifyColumn(tabElement, 35)) {
+    deleteActiveCell();
+    const newCol = document.createElement("div");
+    newCol.classList.add("tabs__column");
+    newCol.innerHTML = `
     <span class="tabs__cell tabs__cell-active">-</span>
     <span class="tabs__cell">-</span>
     <span class="tabs__cell">-</span>
@@ -220,7 +223,8 @@ function addLine() {
     <span class="tabs__cell">-</span>
     <span class="tabs__cell">-</span>
   `;
-  tabElement.appendChild(newCol);
+    tabElement.appendChild(newCol);
+  }
 }
 
 function deleteLine() {
@@ -328,12 +332,12 @@ function moveUp() {
 function moveRight() {
   const { tabElement, cellElement, string, col, tab } = getActiveCell();
 
-  if (col !== "35") {
+  if (col !== MAX_COLUMNS) {
     cellElement.classList.remove("tabs__cell-active");
     if (verifyColumn(tabElement, +col + 1)) {
       addActiveCell({ string, col: +col + 1, tab });
     } else {
-      addActiveCell({string, col, tab});
+      addActiveCell({ string, col, tab });
     }
   }
   return "move";
@@ -347,7 +351,7 @@ function moveLeft() {
     if (verifyColumn(tabElement, +col - 1)) {
       addActiveCell({ string, col: +col - 1, tab });
     } else {
-      addActiveCell({string, col, tab});
+      addActiveCell({ string, col, tab });
     }
   }
   return "move";
