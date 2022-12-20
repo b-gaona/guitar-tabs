@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
         addBlankCol();
         updateDataInfo();
         break;
+      case "s":
+        break;
     }
     const id = document.querySelector("#helper");
     id.textContent = JSON.stringify(undoArray);
@@ -161,20 +163,14 @@ function undo() {
 
 function redo() {
   const lastCommand = redoArray.pop();
-  const currCell = document.querySelector(".tabs__cell-active");
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
+  const { string, col, tab } = getActiveCell();
 
   if (lastCommand) {
     const fn = lastCommand.inverse.revFn;
     saveCommand(fn, lastCommand.action.fn, false); //False to avoid reset the redo
 
     if (undoArray.length > 0) {
-      undoArray[undoArray.length - 1].action.index = {
-        string: currCell.dataset.string,
-        col: col.dataset.col,
-        tab: tab.dataset.tab,
-      };
+      undoArray[undoArray.length - 1].action.index = { string, col, tab };
     }
 
     fn();
@@ -183,12 +179,10 @@ function redo() {
 }
 
 function addLine() {
-  const currCell = document.querySelector(".tabs__cell-active");
+  const { tabElement } = getActiveCell();
 
   deleteActiveCell();
 
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
   const newCol = document.createElement("div");
   newCol.classList.add("tabs__column");
   newCol.innerHTML = `
@@ -199,24 +193,19 @@ function addLine() {
     <span class="tabs__cell">-</span>
     <span class="tabs__cell">-</span>
   `;
-  tab.appendChild(newCol);
+  tabElement.appendChild(newCol);
 }
 
 function deleteLine() {
-  const currCell = document.querySelector(".tabs__cell-active");
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
+  const { tabElement } = getActiveCell();
 
-  tab.lastChild.remove();
+  tabElement.lastChild.remove();
 }
 
 function addBlankCol() {
-  const currCell = document.querySelector(".tabs__cell-active");
+  const { tabElement } = getActiveCell();
 
   deleteActiveCell();
-
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
 
   const blankCol = document.createElement("div");
   const newCol = document.createElement("div");
@@ -242,35 +231,25 @@ function addBlankCol() {
     <span class="tabs__cell">-</span>
   `;
 
-  tab.appendChild(blankCol);
-  tab.appendChild(newCol);
+  tabElement.appendChild(blankCol);
+  tabElement.appendChild(newCol);
 }
 
 function deleteBlankCol() {
-  const currCell = document.querySelector(".tabs__cell-active");
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
+  const { tabElement } = getActiveCell();
 
-  tab.lastChild.remove();
-  tab.lastChild.remove();
+  tabElement.lastChild.remove();
+  tabElement.lastChild.remove();
 }
 
 function deleteActiveCell() {
-  const currCell = document.querySelector(".tabs__cell-active");
-  const col = currCell.parentElement;
-  const tab = col.parentElement;
-
-  console.log(undoArray[0]);
+  const { cellElement, string, col, tab } = getActiveCell();
 
   if (undoArray.length > 0) {
-    undoArray[undoArray.length - 1].action.index = {
-      string: currCell.dataset.string,
-      col: col.dataset.col,
-      tab: tab.dataset.tab,
-      //activated: "del",
-    };
+    undoArray[undoArray.length - 1].action.index = { string, col, tab };
   }
-  currCell.classList.remove("tabs__cell-active");
+
+  cellElement.classList.remove("tabs__cell-active");
 }
 
 function addActiveCell({ string, col, tab }) {
@@ -279,4 +258,19 @@ function addActiveCell({ string, col, tab }) {
   const currString = currCol.querySelector(`span[data-string='${string}']`);
 
   currString.classList.add("tabs__cell-active");
+}
+
+function getActiveCell() {
+  const cell = document.querySelector(".tabs__cell-active");
+  const col = cell.parentElement;
+  const tab = col.parentElement;
+
+  return {
+    string: cell.dataset.string,
+    col: col.dataset.col,
+    tab: tab.dataset.tab,
+    tabElement: tab,
+    colElement: col,
+    cellElement: cell,
+  };
 }
