@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   putDataColumns();
 
   document.addEventListener("keydown", (evt) => {
-    const { string } = getActiveCell();
-    
+    const { string, col } = getActiveCell();
+
     switch (evt.key) {
       case "t":
         saveCommand(addTab, deleteTab);
@@ -38,9 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         break;
       case "w":
-        if (string !== "6") {
+        if (string !== "1") {
           saveCommand(moveUp, moveDown);
           moveUp();
+        }
+        break;
+      case "a":
+        if (col !== "3") {
+          saveCommand(moveLeft, moveRight);
+          moveLeft();
+        }
+        break;
+      case "d":
+        if (col !== "35") {
+          saveCommand(moveRight, moveLeft);
+          moveRight();
         }
         break;
     }
@@ -311,4 +323,36 @@ function moveUp() {
     addActiveCell({ string: +string - 1, col, tab });
   }
   return "move";
+}
+
+function moveRight() {
+  const { tabElement, cellElement, string, col, tab } = getActiveCell();
+
+  if (col !== "35") {
+    cellElement.classList.remove("tabs__cell-active");
+    if (verifyColumn(tabElement, +col + 1)) {
+      addActiveCell({ string, col: +col + 1, tab });
+    } else {
+      addActiveCell({string, col, tab});
+    }
+  }
+  return "move";
+}
+
+function moveLeft() {
+  const { tabElement, cellElement, string, col, tab } = getActiveCell();
+
+  if (col !== "3") {
+    cellElement.classList.remove("tabs__cell-active");
+    if (verifyColumn(tabElement, +col - 1)) {
+      addActiveCell({ string, col: +col - 1, tab });
+    } else {
+      addActiveCell({string, col, tab});
+    }
+  }
+  return "move";
+}
+
+function verifyColumn(tabElement, col) {
+  return tabElement.querySelector(`div[data-col='${col}']`);
 }
