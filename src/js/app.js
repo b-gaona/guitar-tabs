@@ -1,6 +1,5 @@
 const undoArray = [];
 const redoArray = [];
-let flag = true;
 
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
@@ -8,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   putDataColumns();
 
   document.addEventListener("keydown", (evt) => {
+    const { string } = getActiveCell();
+    
     switch (evt.key) {
       case "t":
         saveCommand(addTab, deleteTab);
@@ -31,6 +32,16 @@ document.addEventListener("DOMContentLoaded", () => {
         updateDataInfo();
         break;
       case "s":
+        if (string !== "6") {
+          saveCommand(moveDown, moveUp);
+          moveDown();
+        }
+        break;
+      case "w":
+        if (string !== "6") {
+          saveCommand(moveUp, moveDown);
+          moveUp();
+        }
         break;
     }
     const id = document.querySelector("#helper");
@@ -145,9 +156,13 @@ function undo() {
 
   if (lastCommand) {
     const fn = lastCommand.inverse.revFn;
-    fn();
 
-    addActiveCell(lastCommand.action.index);
+    const result = fn();
+
+    //We add this conditional to avoid multiple calls to the addActiveCell function. The function that is going to be called is the one that is inside fn()
+    if (result !== "move") {
+      addActiveCell(lastCommand.action.index);
+    }
 
     //We add the undo function to the redo array
     redoArray.push({
@@ -273,4 +288,27 @@ function getActiveCell() {
     colElement: col,
     cellElement: cell,
   };
+}
+
+function moveDown() {
+  const { cellElement, string, col, tab } = getActiveCell();
+
+  if (string !== "6") {
+    if (undoArray.length > 0) {
+      undoArray[undoArray.length - 1].action.index = { string, col, tab };
+    }
+    cellElement.classList.remove("tabs__cell-active");
+    addActiveCell({ string: +string + 1, col, tab });
+  }
+  return "move";
+}
+
+function moveUp() {
+  const { cellElement, string, col, tab } = getActiveCell();
+
+  if (string !== "1") {
+    cellElement.classList.remove("tabs__cell-active");
+    addActiveCell({ string: +string - 1, col, tab });
+  }
+  return "move";
 }
