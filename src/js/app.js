@@ -371,15 +371,17 @@ function typeNotes(note) {
   const { cellElement } = getActiveCell();
   const txt = cellElement.textContent;
 
-  if (note !== "Backspace") {
-    cellElement.textContent = txt.replace("—", "") + note;
-    return;
-  }
+  if (txt !== "|") {
+    if (note !== "Backspace") {
+      cellElement.textContent = txt.replace("—", "") + note;
+      return;
+    }
 
-  if (txt.length !== 1) {
-    cellElement.textContent = txt.substring(0, txt.length - 1);
-    return;
-  }
+    if (txt.length !== 1) {
+      cellElement.textContent = txt.substring(0, txt.length - 1);
+      return;
+    }
 
-  cellElement.textContent = "—";
+    cellElement.textContent = "—";
+  }
 }
