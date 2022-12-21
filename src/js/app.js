@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateDataInfo();
 
   document.addEventListener("keydown", (evt) => {
-    const { string, col } = getActiveCell();
+    const { string, col, tab } = getActiveCell();
     const { key } = evt;
 
     switch (key) {
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
       case "s":
       case "S":
       case "ArrowDown":
-        if (string !== MAX_STRING) {
+        if (string === MAX_STRING && verifyTab(+tab + 1) || string !== MAX_STRING) {
           saveCommand(moveDown, moveUp);
         }
         moveDown();
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       case "w":
       case "W":
       case "ArrowUp":
-        if (string !== MIN_STRING) {
+        if (string === MIN_STRING && verifyTab(+tab - 1) || string !== MIN_STRING) {
           saveCommand(moveUp, moveDown);
         }
         moveUp();
@@ -351,7 +351,6 @@ function moveDown() {
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string + 1, col, tab });
   } else if (verifyTab(+tab + 1)) {
-    modifyUndoArray(MIN_STRING, MIN_COLUMN, +tab +1);
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: MIN_STRING, col: MIN_COLUMN, tab: +tab + 1 });
   }
