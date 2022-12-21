@@ -1,0 +1,25 @@
+@use "base/variables" as v;
+@use "base/mixins" as m;
+
+.description{
+  display: flex;
+  justify-content: center;
+  column-gap: 5rem;
+
+  &__part{
+    padding-block: 0.5rem;
+    font-size: 1.8rem;
+
+    label{
+      color: v.$primary;
+      font-weight: 700;
+      display: block;
+      padding-bottom: 0.5rem;
+    }
+    input{
+      text-indent: 0.5rem;
+      padding-block: 0.2rem;
+      vertical-align: center;
+    }
+  }
+}

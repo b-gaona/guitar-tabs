@@ -1,8 +1,8 @@
 @use "base/variables" as v;
 @use "base/mixins" as m;
 
-.content{
+.content {
+  padding-top: 2rem;
   display: grid;
-  grid-template-columns: 75% 20%;
-  column-gap: 3rem;
+  grid-template-columns: 4fr 1fr;
 }
