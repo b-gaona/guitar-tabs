@@ -1,6 +1,7 @@
 const undoArray = [];
 const redoArray = [];
 const MAX_COLUMNS = "35";
+const GUITAR_TECHNIQUES = ["h", "p", "/", "b", "x", "Backspace"];
 
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
@@ -9,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("keydown", (evt) => {
     const { string, col } = getActiveCell();
-
-    switch (evt.key) {
+    const { key } = evt;
+    switch (key) {
       case "t":
         saveCommand(addTab, deleteTab);
         addTab();
@@ -59,6 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         break;
     }
+
+    if (!isNaN(key) || GUITAR_TECHNIQUES.includes(key)) {
+      typeNotes(key);
+    }
+
     const id = document.querySelector("#helper");
     id.textContent = JSON.stringify(undoArray);
     const id2 = document.querySelector("#helper2");
@@ -359,4 +365,21 @@ function moveLeft() {
 
 function verifyColumn(tabElement, col) {
   return tabElement.querySelector(`div[data-col='${col}']`);
+}
+
+function typeNotes(note) {
+  const { cellElement } = getActiveCell();
+  const txt = cellElement.textContent;
+
+  if (note !== "Backspace") {
+    cellElement.textContent = txt.replace("-", "") + note;
+    return;
+  }
+
+  if (txt.length !== 1) {
+    cellElement.textContent = txt.substring(0, txt.length - 1);
+    return;
+  }
+
+  cellElement.textContent = "-";
 }
