@@ -10,7 +10,8 @@
   }
   &__cell{
     text-align: center;
-    width: 2rem;
+    min-width: 2rem;
+    padding: 0.5rem;
     font-weight: 700;
     &-active{
       position: relative;
@@ -21,7 +22,8 @@
         display: block;
         position: absolute;
         background-color: rgba(196, 196, 51, 0.747);
-        bottom: 0;
+        top: 0;
+        left: 0;
         animation: blinker 1s linear infinite;
       }
       @keyframes blinker {

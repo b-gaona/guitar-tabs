@@ -138,12 +138,12 @@ function addTab() {
     <span class="tabs__cell">|</span>
   </div>
   <div class="tabs__column">
-    <span class="tabs__cell tabs__cell-active">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
+    <span class="tabs__cell tabs__cell-active">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
   </div>
   `;
 
@@ -222,12 +222,12 @@ function addLine() {
     const newCol = document.createElement("div");
     newCol.classList.add("tabs__column");
     newCol.innerHTML = `
-    <span class="tabs__cell tabs__cell-active">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
+    <span class="tabs__cell tabs__cell-active">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
   `;
     tabElement.appendChild(newCol);
   }
@@ -260,12 +260,12 @@ function addBlankCol() {
   `;
 
   newCol.innerHTML = `
-    <span class="tabs__cell tabs__cell-active">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
-    <span class="tabs__cell">-</span>
+    <span class="tabs__cell tabs__cell-active">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
+    <span class="tabs__cell">—</span>
   `;
 
   tabElement.appendChild(blankCol);
@@ -372,7 +372,7 @@ function typeNotes(note) {
   const txt = cellElement.textContent;
 
   if (note !== "Backspace") {
-    cellElement.textContent = txt.replace("-", "") + note;
+    cellElement.textContent = txt.replace("—", "") + note;
     return;
   }
 
@@ -381,5 +381,5 @@ function typeNotes(note) {
     return;
   }
 
-  cellElement.textContent = "-";
+  cellElement.textContent = "—";
 }
