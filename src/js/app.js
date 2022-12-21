@@ -24,78 +24,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("keydown", (evt) => {
     const { string, col, tab } = getActiveCell();
-    const { key } = evt;
+    const { key, target } = evt;
 
-    switch (key) {
-      case "t":
-      case "T":
-        saveCommand(addTab, deleteTab);
-        addTab();
-        updateDataInfo();
-        break;
-      case "q":
-      case "Q":
-        undo();
-        break;
-      case "e":
-      case "E":
-        redo();
-        break;
-      case "Enter":
-        if (col !== MAX_COLUMNS) {
-          saveCommand(addLine, deleteLine);
-          addLine();
+    if (target.tagName === "BODY") {
+      switch (key) {
+        case "t":
+        case "T":
+          saveCommand(addTab, deleteTab);
+          addTab();
           updateDataInfo();
-        }
-        break;
-      case "l":
-      case "L":
-        saveCommand(addBlankCol, deleteBlankCol);
-        addBlankCol();
-        updateDataInfo();
-        break;
-      case "s":
-      case "S":
-      case "ArrowDown":
-        if (string === MAX_STRING && verifyTab(+tab + 1) || string !== MAX_STRING) {
-          saveCommand(moveDown, moveUp);
-        }
-        moveDown();
-        break;
-      case "w":
-      case "W":
-      case "ArrowUp":
-        if (string === MIN_STRING && verifyTab(+tab - 1) || string !== MIN_STRING) {
-          saveCommand(moveUp, moveDown);
-        }
-        moveUp();
-        break;
-      case "a":
-      case "A":
-      case "ArrowLeft":
-        if (col !== MIN_COLUMN) {
-          saveCommand(moveLeft, moveRight);
-          moveLeft();
-        }
-        break;
-      case "d":
-      case "D":
-      case "ArrowRight":
-        if (col !== MAX_COLUMNS) {
-          saveCommand(moveRight, moveLeft);
-          moveRight();
-        }
-        break;
-    }
+          break;
+        case "q":
+        case "Q":
+          undo();
+          break;
+        case "e":
+        case "E":
+          redo();
+          break;
+        case "Enter":
+          if (col !== MAX_COLUMNS) {
+            saveCommand(addLine, deleteLine);
+            addLine();
+            updateDataInfo();
+          }
+          break;
+        case "l":
+        case "L":
+          saveCommand(addBlankCol, deleteBlankCol);
+          addBlankCol();
+          updateDataInfo();
+          break;
+        case "s":
+        case "S":
+        case "ArrowDown":
+          if (
+            (string === MAX_STRING && verifyTab(+tab + 1)) ||
+            string !== MAX_STRING
+          ) {
+            saveCommand(moveDown, moveUp);
+          }
+          moveDown();
+          break;
+        case "w":
+        case "W":
+        case "ArrowUp":
+          if (
+            (string === MIN_STRING && verifyTab(+tab - 1)) ||
+            string !== MIN_STRING
+          ) {
+            saveCommand(moveUp, moveDown);
+          }
+          moveUp();
+          break;
+        case "a":
+        case "A":
+        case "ArrowLeft":
+          if (col !== MIN_COLUMN) {
+            saveCommand(moveLeft, moveRight);
+            moveLeft();
+          }
+          break;
+        case "d":
+        case "D":
+        case "ArrowRight":
+          if (col !== MAX_COLUMNS) {
+            saveCommand(moveRight, moveLeft);
+            moveRight();
+          }
+          break;
+      }
 
-    if (!isNaN(key) || GUITAR_TECHNIQUES.includes(key)) {
-      typeNotes(key);
+      if (!isNaN(key) || GUITAR_TECHNIQUES.includes(key)) {
+        typeNotes(key);
+      }
     }
-
-    const id = document.querySelector("#helper");
-    id.textContent = JSON.stringify(undoArray);
-    const id2 = document.querySelector("#helper2");
-    id2.textContent = JSON.stringify(redoArray);
   });
 });
 
@@ -239,7 +242,7 @@ function redo() {
     const fn = lastCommand.inverse.revFn;
     saveCommand(fn, lastCommand.action.fn, false); //False to avoid reset the redo
 
-    modifyUndoArray({string, col, tab});
+    modifyUndoArray({ string, col, tab });
 
     fn();
     typeNotes(lastCommand.action.key);
@@ -315,7 +318,7 @@ function deleteBlankCol() {
 function deleteActiveCell() {
   const { cellElement, string, col, tab } = getActiveCell();
 
-  modifyUndoArray({string, col, tab});
+  modifyUndoArray({ string, col, tab });
 
   cellElement.classList.remove("tabs__cell-active");
 }
@@ -347,7 +350,7 @@ function moveDown() {
   const { cellElement, string, col, tab } = getActiveCell();
 
   if (string !== MAX_STRING) {
-    modifyUndoArray({string, col, tab});
+    modifyUndoArray({ string, col, tab });
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string + 1, col, tab });
   } else if (verifyTab(+tab + 1)) {
