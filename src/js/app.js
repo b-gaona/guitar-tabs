@@ -36,24 +36,28 @@ document.addEventListener("DOMContentLoaded", () => {
         updateDataInfo();
         break;
       case "s":
+      case "ArrowDown":
         if (string !== "6") {
           saveCommand(moveDown, moveUp);
           moveDown();
         }
         break;
       case "w":
+      case "ArrowUp":
         if (string !== "1") {
           saveCommand(moveUp, moveDown);
           moveUp();
         }
         break;
       case "a":
+      case "ArrowLeft":
         if (col !== "3") {
           saveCommand(moveLeft, moveRight);
           moveLeft();
         }
         break;
       case "d":
+      case "ArrowRight":
         if (col !== MAX_COLUMNS) {
           saveCommand(moveRight, moveLeft);
           moveRight();
@@ -157,7 +161,7 @@ function deleteTab() {
 }
 
 function saveCommand(fn, revFn, keep = true) {
-  const {cellElement} = getActiveCell();
+  const { cellElement } = getActiveCell();
   undoArray.push({
     action: {
       fn,
