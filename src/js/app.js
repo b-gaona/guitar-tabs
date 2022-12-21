@@ -1,25 +1,44 @@
+const MIN_STRING = "1";
+const MAX_STRING = "6";
+const MIN_COLUMN = "3";
+const MAX_COLUMNS = "35";
+
+const GUITAR_TECHNIQUES = [
+  "h",
+  "H",
+  "p",
+  "P",
+  "/",
+  "b",
+  "B",
+  "x",
+  "X",
+  "Backspace",
+];
+
 const undoArray = [];
 const redoArray = [];
-const MAX_COLUMNS = "35";
-const GUITAR_TECHNIQUES = ["h", "p", "/", "b", "x", "Backspace"];
 
 document.addEventListener("DOMContentLoaded", () => {
-  putDataTabs();
-  putDataStrings();
+  updateDataInfo();
 
   document.addEventListener("keydown", (evt) => {
     const { string, col } = getActiveCell();
     const { key } = evt;
+
     switch (key) {
       case "t":
+      case "T":
         saveCommand(addTab, deleteTab);
         addTab();
         updateDataInfo();
         break;
       case "q":
+      case "Q":
         undo();
         break;
       case "e":
+      case "E":
         redo();
         break;
       case "Enter":
@@ -30,32 +49,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         break;
       case "l":
+      case "L":
         saveCommand(addBlankCol, deleteBlankCol);
         addBlankCol();
         updateDataInfo();
         break;
       case "s":
+      case "S":
       case "ArrowDown":
-        if (string !== "6") {
+        if (string !== MAX_STRING) {
           saveCommand(moveDown, moveUp);
         }
         moveDown();
         break;
       case "w":
+      case "W":
       case "ArrowUp":
-        if (string !== "1") {
+        if (string !== MIN_STRING) {
           saveCommand(moveUp, moveDown);
         }
         moveUp();
         break;
       case "a":
+      case "A":
       case "ArrowLeft":
-        if (col !== "3") {
+        if (col !== MIN_COLUMN) {
           saveCommand(moveLeft, moveRight);
           moveLeft();
         }
         break;
       case "d":
+      case "D":
       case "ArrowRight":
         if (col !== MAX_COLUMNS) {
           saveCommand(moveRight, moveLeft);
@@ -215,9 +239,7 @@ function redo() {
     const fn = lastCommand.inverse.revFn;
     saveCommand(fn, lastCommand.action.fn, false); //False to avoid reset the redo
 
-    if (undoArray.length > 0) {
-      undoArray[undoArray.length - 1].action.index = { string, col, tab };
-    }
+    modifyUndoArray({string, col, tab});
 
     fn();
     typeNotes(lastCommand.action.key);
@@ -228,7 +250,7 @@ function redo() {
 function addLine() {
   const { tabElement } = getActiveCell();
 
-  if (!verifyColumn(tabElement, 35)) {
+  if (!verifyColumn(tabElement, MAX_COLUMNS)) {
     deleteActiveCell();
     const newCol = document.createElement("div");
     newCol.classList.add("tabs__column");
@@ -293,9 +315,7 @@ function deleteBlankCol() {
 function deleteActiveCell() {
   const { cellElement, string, col, tab } = getActiveCell();
 
-  if (undoArray.length > 0) {
-    undoArray[undoArray.length - 1].action.index = { string, col, tab };
-  }
+  modifyUndoArray({string, col, tab});
 
   cellElement.classList.remove("tabs__cell-active");
 }
@@ -326,18 +346,14 @@ function getActiveCell() {
 function moveDown() {
   const { cellElement, string, col, tab } = getActiveCell();
 
-  if (string !== "6") {
-    if (undoArray.length > 0) {
-      undoArray[undoArray.length - 1].action.index = { string, col, tab };
-    }
+  if (string !== MAX_STRING) {
+    modifyUndoArray({string, col, tab});
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string + 1, col, tab });
   } else if (verifyTab(+tab + 1)) {
-    if (undoArray.length > 0) {
-      undoArray[undoArray.length - 1].action.index = { string: "1", col: "3", tab: +tab + 1 };
-    }
+    modifyUndoArray(MIN_STRING, MIN_COLUMN, +tab +1);
     cellElement.classList.remove("tabs__cell-active");
-    addActiveCell({ string: "1", col: "3", tab: +tab + 1 });
+    addActiveCell({ string: MIN_STRING, col: MIN_COLUMN, tab: +tab + 1 });
   }
   return "move";
 }
@@ -345,12 +361,12 @@ function moveDown() {
 function moveUp() {
   const { cellElement, string, col, tab } = getActiveCell();
 
-  if (string !== "1") {
+  if (string !== MIN_STRING) {
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string - 1, col, tab });
   } else if (verifyTab(+tab - 1)) {
     cellElement.classList.remove("tabs__cell-active");
-    addActiveCell({ string: "6", col: "3", tab: +tab - 1 });
+    addActiveCell({ string: MAX_STRING, col: MIN_COLUMN, tab: +tab - 1 });
   }
   return "move";
 }
@@ -372,7 +388,7 @@ function moveRight() {
 function moveLeft() {
   const { tabElement, cellElement, string, col, tab } = getActiveCell();
 
-  if (col !== "3") {
+  if (col !== MIN_COLUMN) {
     cellElement.classList.remove("tabs__cell-active");
     if (verifyColumn(tabElement, +col - 1)) {
       addActiveCell({ string, col: +col - 1, tab });
@@ -407,5 +423,11 @@ function typeNotes(note) {
     }
 
     cellElement.textContent = "—";
+  }
+}
+
+function modifyUndoArray({ string, col, tab }) {
+  if (undoArray.length > 0) {
+    undoArray[undoArray.length - 1].action.index = { string, col, tab };
   }
 }

@@ -13,6 +13,8 @@
     min-width: 2rem;
     padding: 0.5rem;
     font-weight: 700;
+    text-transform: lowercase;
+    
     &-active{
       position: relative;
       &::before{
