@@ -6,7 +6,6 @@ const GUITAR_TECHNIQUES = ["h", "p", "/", "b", "x", "Backspace"];
 document.addEventListener("DOMContentLoaded", () => {
   putDataTabs();
   putDataStrings();
-  putDataColumns();
 
   document.addEventListener("keydown", (evt) => {
     const { string, col } = getActiveCell();
@@ -39,15 +38,15 @@ document.addEventListener("DOMContentLoaded", () => {
       case "ArrowDown":
         if (string !== "6") {
           saveCommand(moveDown, moveUp);
-          moveDown();
         }
+        moveDown();
         break;
       case "w":
       case "ArrowUp":
         if (string !== "1") {
           saveCommand(moveUp, moveDown);
-          moveUp();
         }
+        moveUp();
         break;
       case "a":
       case "ArrowLeft":
@@ -78,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function updateDataInfo() {
   putDataTabs();
-  putDataColumns();
   putDataStrings();
 }
 
@@ -87,17 +85,18 @@ function putDataTabs() {
   let cont = 1;
 
   tabs.forEach((tab) => {
+    putDataColumns(tab);
     tab.setAttribute("data-tab", cont);
     cont++;
   });
 }
 
-function putDataColumns() {
-  const tabs = document.querySelectorAll(".tabs__column");
+function putDataColumns(tab) {
+  const columns = tab.querySelectorAll(".tabs__column");
   let cont = 1;
 
-  tabs.forEach((tab) => {
-    tab.setAttribute("data-col", cont);
+  columns.forEach((col) => {
+    col.setAttribute("data-col", cont);
     cont++;
   });
 }
@@ -333,6 +332,12 @@ function moveDown() {
     }
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string + 1, col, tab });
+  } else if (verifyTab(+tab + 1)) {
+    if (undoArray.length > 0) {
+      undoArray[undoArray.length - 1].action.index = { string: "1", col: "3", tab: +tab + 1 };
+    }
+    cellElement.classList.remove("tabs__cell-active");
+    addActiveCell({ string: "1", col: "3", tab: +tab + 1 });
   }
   return "move";
 }
@@ -343,6 +348,9 @@ function moveUp() {
   if (string !== "1") {
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string - 1, col, tab });
+  } else if (verifyTab(+tab - 1)) {
+    cellElement.classList.remove("tabs__cell-active");
+    addActiveCell({ string: "6", col: "3", tab: +tab - 1 });
   }
   return "move";
 }
@@ -377,6 +385,10 @@ function moveLeft() {
 
 function verifyColumn(tabElement, col) {
   return tabElement.querySelector(`div[data-col='${col}']`);
+}
+
+function verifyTab(tab) {
+  return document.querySelector(`div[data-tab='${tab}']`);
 }
 
 function typeNotes(note) {
