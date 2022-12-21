@@ -157,9 +157,11 @@ function deleteTab() {
 }
 
 function saveCommand(fn, revFn, keep = true) {
+  const {cellElement} = getActiveCell();
   undoArray.push({
     action: {
       fn,
+      key: cellElement.textContent,
     },
     inverse: {
       revFn,
@@ -175,6 +177,10 @@ function saveCommand(fn, revFn, keep = true) {
 function undo() {
   const lastCommand = undoArray.pop();
 
+  const { cellElement } = getActiveCell();
+  const key = cellElement.textContent;
+  cellElement.textContent = "—";
+
   if (lastCommand) {
     const fn = lastCommand.inverse.revFn;
 
@@ -189,6 +195,7 @@ function undo() {
     redoArray.push({
       action: {
         fn,
+        key,
       },
       inverse: {
         revFn: lastCommand.action.fn,
@@ -210,6 +217,7 @@ function redo() {
     }
 
     fn();
+    typeNotes(lastCommand.action.key);
     updateDataInfo();
   }
 }
@@ -371,7 +379,7 @@ function typeNotes(note) {
   const { cellElement } = getActiveCell();
   const txt = cellElement.textContent;
 
-  if (txt !== "|") {
+  if (txt !== "|" && note !== " ") {
     if (note !== "Backspace") {
       cellElement.textContent = txt.replace("—", "") + note;
       return;
