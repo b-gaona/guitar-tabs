@@ -51,9 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
           break;
         case "l":
         case "L":
-          saveCommand(addBlankCol, deleteBlankCol);
-          addBlankCol();
-          updateDataInfo();
+          if (col !== MAX_COLUMNS) {
+            saveCommand(addBlankCol, deleteBlankCol);
+            addBlankCol();
+            updateDataInfo();
+          }
           break;
         case "s":
         case "S":
@@ -278,34 +280,36 @@ function deleteLine() {
 function addBlankCol() {
   const { tabElement } = getActiveCell();
 
-  deleteActiveCell();
+  if (!verifyColumn(tabElement, MAX_COLUMNS)) {
+    deleteActiveCell();
 
-  const blankCol = document.createElement("div");
-  const newCol = document.createElement("div");
+    const blankCol = document.createElement("div");
+    const newCol = document.createElement("div");
 
-  blankCol.classList.add("tabs__column");
-  newCol.classList.add("tabs__column");
+    blankCol.classList.add("tabs__column");
+    newCol.classList.add("tabs__column");
 
-  blankCol.innerHTML = `
-    <span class="tabs__cell">|</span>
-    <span class="tabs__cell">|</span>
-    <span class="tabs__cell">|</span>
-    <span class="tabs__cell">|</span>
-    <span class="tabs__cell">|</span>
-    <span class="tabs__cell">|</span>
-  `;
+    blankCol.innerHTML = `
+      <span class="tabs__cell">|</span>
+      <span class="tabs__cell">|</span>
+      <span class="tabs__cell">|</span>
+      <span class="tabs__cell">|</span>
+      <span class="tabs__cell">|</span>
+      <span class="tabs__cell">|</span>
+    `;
 
-  newCol.innerHTML = `
-    <span class="tabs__cell tabs__cell-active">—</span>
-    <span class="tabs__cell">—</span>
-    <span class="tabs__cell">—</span>
-    <span class="tabs__cell">—</span>
-    <span class="tabs__cell">—</span>
-    <span class="tabs__cell">—</span>
-  `;
+    newCol.innerHTML = `
+      <span class="tabs__cell tabs__cell-active">—</span>
+      <span class="tabs__cell">—</span>
+      <span class="tabs__cell">—</span>
+      <span class="tabs__cell">—</span>
+      <span class="tabs__cell">—</span>
+      <span class="tabs__cell">—</span>
+    `;
 
-  tabElement.appendChild(blankCol);
-  tabElement.appendChild(newCol);
+    tabElement.appendChild(blankCol);
+    tabElement.appendChild(newCol);
+  }
 }
 
 function deleteBlankCol() {
