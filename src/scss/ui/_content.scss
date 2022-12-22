@@ -5,4 +5,13 @@
   padding-top: 2rem;
   display: grid;
   grid-template-columns: 4fr 1fr;
+
+  &__tabs{
+    overflow: hidden;
+  }
+}
+
+#heading{
+  display: flex;
+  justify-content: space-between;
 }

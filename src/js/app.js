@@ -1,7 +1,7 @@
 const MIN_STRING = "1";
 const MAX_STRING = "6";
 const MIN_COLUMN = "3";
-const MAX_COLUMNS = "35";
+const MAX_COLUMNS = "32";
 
 const GUITAR_TECHNIQUES = [
   "h",

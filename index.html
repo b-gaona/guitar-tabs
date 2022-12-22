@@ -14,7 +14,9 @@
 <body>
 	<main class="container content">
 		<section class="content__tabs">
-			<h1 class="main__heading">GUITAR TABS of "<span>name of the song</span>"</h1>
+			<div id="heading">
+				<h1 class="main__heading">GUITAR TABS</h1>
+			</div>
 			<div class="content__description">
 				<div class="description">
 					<div class="description__part">
@@ -23,7 +25,7 @@
 					</div>
 					<div class="description__part">
 						<label for="capo">Capo: </label>
-						<input type="number" min="0" id="capo">
+						<input type="number" min="1" id="capo">
 					</div>
 					<div class="description__part">
 						<label for="info">Extra info about the song: </label>
@@ -183,11 +185,13 @@
 						</div>
 					</div>
 				</div>
-				<button class="print">Print</button>
+				<button class="print" onclick="print()">Print</button>
 			</section>
 		</aside>
 	</main>
+	<script src="build/js/html2pdf.bundle.min.js"></script>
 	<script src="build/js/app.js" defer></script>
+	<script src="build/js/pdf.js" defer></script>
 </body>
 
 </html>
