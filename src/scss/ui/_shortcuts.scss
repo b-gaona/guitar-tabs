@@ -33,4 +33,8 @@
     background-color: darken(#99582a, 15%);
     transition: 300ms ease-in-out;
   }
+
+  @media (max-width: 976px) {
+    display: none;
+  }
 }

@@ -9,9 +9,19 @@
   &__tabs{
     overflow: hidden;
   }
+  
+  @media (max-width: 976px) {
+    display: none;
+  }
 }
 
 #heading{
   display: flex;
   justify-content: space-between;
+}
+#video{
+  display: none;
+  @media (max-width: 976px) {
+    display: contents;
+  }
 }
