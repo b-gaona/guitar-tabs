@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateDataInfo();
 
   document.addEventListener("keydown", (evt) => {
-    const { string, col, tab } = getActiveCell();
+    const { string, col, tab, tabElement } = getActiveCell();
     const { key, target } = evt;
 
     if (target.tagName === "BODY") {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         case "a":
         case "A":
         case "ArrowLeft":
-          if (col !== MIN_COLUMN) {
+          if (col !== MIN_COLUMN && verifyColumn(tabElement, +col - 1)) {
             saveCommand(moveLeft, moveRight);
             moveLeft();
           }
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
         case "d":
         case "D":
         case "ArrowRight":
-          if (col !== MAX_COLUMNS) {
+          if (col !== MAX_COLUMNS && verifyColumn(tabElement, +col + 1)) {
             saveCommand(moveRight, moveLeft);
             moveRight();
           }
@@ -354,12 +354,14 @@ function moveDown() {
   const { cellElement, string, col, tab } = getActiveCell();
 
   if (string !== MAX_STRING) {
-    modifyUndoArray({ string, col, tab });
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string + 1, col, tab });
   } else if (verifyTab(+tab + 1)) {
-    cellElement.classList.remove("tabs__cell-active");
-    addActiveCell({ string: MIN_STRING, col: MIN_COLUMN, tab: +tab + 1 });
+    const downTab = document.querySelector(`div[data-tab='${+tab + 1}']`);
+    if (downTab && verifyColumn(downTab, col)) {
+      cellElement.classList.remove("tabs__cell-active");
+      addActiveCell({ string: MIN_STRING, col, tab: +tab + 1 });
+    }
   }
   return "move";
 }
@@ -371,8 +373,11 @@ function moveUp() {
     cellElement.classList.remove("tabs__cell-active");
     addActiveCell({ string: +string - 1, col, tab });
   } else if (verifyTab(+tab - 1)) {
-    cellElement.classList.remove("tabs__cell-active");
-    addActiveCell({ string: MAX_STRING, col: MIN_COLUMN, tab: +tab - 1 });
+    const upTab = document.querySelector(`div[data-tab='${+tab - 1}']`);
+    if (upTab && verifyColumn(upTab, col)) {
+      cellElement.classList.remove("tabs__cell-active");
+      addActiveCell({ string: MAX_STRING, col, tab: +tab - 1 });
+    }
   }
   return "move";
 }
